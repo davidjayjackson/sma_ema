@@ -3,10 +3,10 @@
 A LibreOffice Calc extension for calculating **simple** and **exponential
 moving averages** (SMA / EMA).
 
-It provides two **cell functions** you can type into a worksheet:
+It provides one **cell function** you can type into a worksheet:
 
-- `SMA(data, period)` — simple moving average
-- `EMA(data, period)` — exponential moving average
+- `MOVAVG(data, period, [type])` — moving average; `type` is `"S"` (or
+  omitted) for a simple moving average, `"E"` for an exponential one.
 
 ---
 
@@ -24,19 +24,29 @@ The macros are installed as a Basic library named **SmaEma**, available under
 
 ## Using the cell functions
 
-`SMA` and `EMA` are **array functions** — they return a whole column at once.
+`MOVAVG` is an ordinary **fill-down function** — it returns the moving average
+value at the *end* of the range you give it. You write one formula and drag it
+down the column, just like `SUM` or `AVERAGE`.
 
-1. Select an output range the same height as your data.
-2. Type the formula, e.g. `=SMA(A2:A100;10)` or `=EMA(A2:A100;10)`.
-3. Confirm with **Ctrl+Shift+Enter**.
+1. In the first output cell (say `B2`, next to data in column `A`), type the
+   formula with the **start of the range anchored** with `$`:
+   - `=MOVAVG(A$2:A2;10)` — simple moving average (default)
+   - `=MOVAVG(A$2:A2;10;"E")` — exponential moving average
+2. Press **Enter**.
+3. Select that cell and **drag the fill handle down** the column (or copy it
+   down). On each row the range grows — `A$2:A3`, `A$2:A4`, … — so each cell
+   shows the moving average up to that row.
 
-Rows that don't yet have enough data (the first `period-1` rows) come back
-empty.
+Rows that don't yet have `period` values behind them come back **blank**.
 
-| Function | Definition |
-|----------|------------|
-| `SMA(data, period)` | Trailing average of the last `period` values. |
-| `EMA(data, period)` | Smoothing factor `alpha = 2 / (period + 1)`, seeded with the simple average of the first `period` values. |
+> Anchor the start (`A$2`) so the EMA accumulates correctly from the first
+> value. Use `;` or `,` as the argument separator depending on your locale.
+
+| Argument | Meaning |
+|----------|---------|
+| `data` | The input range, e.g. `A$2:A2`. |
+| `period` | Window size — a whole number ≥ 1. |
+| `type` | `"S"` or omitted = **simple** (trailing average of the last `period` values); `"E"` = **exponential** (`alpha = 2 / (period + 1)`, seeded with the simple average of the first `period` values). |
 
 Non-numeric / blank cells in the input are treated as `0`.
 
@@ -46,7 +56,7 @@ Non-numeric / blank cells in the input are treated as `0`.
 
 | File | Purpose |
 |------|---------|
-| `MovingAverages.bas` | The `SMA` / `EMA` cell functions plus the shared `ComputeSMA` / `ComputeEMA` math. |
+| `MovingAverages.bas` | The `MOVAVG` cell function (simple + exponential moving averages). |
 | `build.ps1` | Packages the module into `sma_ema.oxt`. |
 
 The `.bas` file is the source of truth; the `.oxt` is generated from it.
@@ -73,4 +83,4 @@ You can also use the macros without packaging:
 
 1. **Tools → Macros → Edit Macros** to open the Basic IDE.
 2. Create a module and paste the contents of `MovingAverages.bas`.
-3. Use the `SMA` / `EMA` functions as above.
+3. Use the `MOVAVG` function as above.

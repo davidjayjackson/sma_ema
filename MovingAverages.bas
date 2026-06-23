@@ -1,148 +1,96 @@
 REM  =====================================================================
 REM  MovingAverages.bas
 REM
-REM  LibreOffice Calc Basic module providing two user-defined functions:
+REM  LibreOffice Calc Basic module providing one user-defined function:
 REM
-REM    SMA(data, period)  - Simple Moving Average
-REM    EMA(data, period)  - Exponential Moving Average
+REM    MOVAVG(data, period, [type])  - Moving Average
+REM        type "S" (or omitted) -> Simple Moving Average
+REM        type "E"              -> Exponential Moving Average
 REM
-REM  Both are array functions: select an output range the same height as
-REM  the input, type the formula, and confirm with Ctrl+Shift+Enter.
+REM  It is an ordinary (scalar) cell function: it returns the moving
+REM  average value at the END of the supplied range. Anchor the start of
+REM  the range and fill down, e.g. put  =MOVAVG(A$2:A2, 5)  in B2 and drag
+REM  it down the column. Rows that don't yet have <period> values come back
+REM  blank. Anchoring the start ($) matters for the EMA, which accumulates
+REM  from the first value.
+REM
+REM  Examples:
+REM    =MOVAVG(A$2:A2, 5)        ' simple (default)
+REM    =MOVAVG(A$2:A2, 5, "E")   ' exponential
+REM    =MOVAVG(A$2:A2, 5, "S")   ' simple, explicit
 REM  =====================================================================
 
 Option Explicit
 
 
 REM  ---------------------------------------------------------------------
-REM  SMA - Simple Moving Average (cell function / array formula)
+REM  MOVAVG - Moving Average at the end of <data>.
+REM    period  number of values in the window (whole number >= 1)
+REM    type    "S"/omitted = simple trailing average of the last <period>
+REM            values; "E" = exponential (alpha = 2 / (period + 1), seeded
+REM            with the simple average of the first <period> values and
+REM            rolled forward to the end of the range).
 REM  ---------------------------------------------------------------------
-Function SMA(ByVal data As Variant, ByVal period As Long) As Variant
+Function MOVAVG(ByVal data As Variant, ByVal period As Long, Optional ByVal kind As Variant) As Variant
+    Dim k As String
+    Dim values As Variant
+    Dim n As Long, i As Long
+    Dim total As Double, alpha As Double, seed As Double, prev As Double
+
     If period < 1 Then
-        SMA = "Error: period must be >= 1"
+        MOVAVG = "Error: period must be >= 1"
         Exit Function
     End If
 
-    Dim values() As Double
-    Dim res() As Double
-    Dim validFrom As Long
-    values = FlattenToDoubles(data)
-    res = ComputeSMA(values, period, validFrom)
-    SMA = ToColumn(res, validFrom)
-End Function
-
-
-REM  ---------------------------------------------------------------------
-REM  EMA - Exponential Moving Average (cell function / array formula)
-REM  ---------------------------------------------------------------------
-Function EMA(ByVal data As Variant, ByVal period As Long) As Variant
-    If period < 1 Then
-        EMA = "Error: period must be >= 1"
-        Exit Function
+    If IsMissing(kind) Then
+        k = "S"
+    Else
+        k = UCase(Trim(CStr(kind)))
     End If
+    If k = "" Then k = "S"
 
-    Dim values() As Double
-    Dim res() As Double
-    Dim validFrom As Long
     values = FlattenToDoubles(data)
-    res = ComputeEMA(values, period, validFrom)
-    EMA = ToColumn(res, validFrom)
-End Function
-
-
-REM  =====================================================================
-REM  Shared math helpers.
-REM
-REM  Each takes a 1-based array of Doubles and returns a 1-based array of
-REM  Doubles. validFrom is set (ByRef) to the first index that holds a real
-REM  result; everything before it should be treated as "not enough data".
-REM  =====================================================================
-
-REM  ComputeSMA - trailing average of the last <period> values.
-Private Function ComputeSMA(values() As Double, ByVal period As Long, ByRef validFrom As Long) As Double()
-    Dim n As Long, i As Long
-    Dim total As Double
-    Dim res() As Double
-
     n = UBound(values)
-    ReDim res(1 To n)
-    If period < 1 Then period = 1
-    If n >= period Then validFrom = period Else validFrom = n + 1
-
-    total = 0
-    For i = 1 To n
-        total = total + values(i)
-        If i > period Then total = total - values(i - period)
-        If i >= period Then res(i) = total / period
-    Next i
-
-    ComputeSMA = res
-End Function
-
-
-REM  ComputeEMA - smoothing factor alpha = 2 / (period + 1), seeded with
-REM  the simple average of the first <period> values.
-Private Function ComputeEMA(values() As Double, ByVal period As Long, ByRef validFrom As Long) As Double()
-    Dim n As Long, i As Long
-    Dim alpha As Double, seed As Double, prev As Double
-    Dim res() As Double
-
-    n = UBound(values)
-    ReDim res(1 To n)
-    If period < 1 Then period = 1
-    alpha = 2 / (period + 1)
-
     If n < period Then
-        validFrom = n + 1
-        ComputeEMA = res
+        MOVAVG = ""        ' not enough data yet
         Exit Function
     End If
 
-    validFrom = period
-    seed = 0
-    For i = 1 To period
-        seed = seed + values(i)
-    Next i
-    prev = seed / period
-    res(period) = prev
+    If Left(k, 1) = "E" Then
+        ' --- Exponential moving average ---
+        seed = 0
+        For i = 1 To period
+            seed = seed + values(i)
+        Next i
+        prev = seed / period
 
-    For i = period + 1 To n
-        prev = alpha * values(i) + (1 - alpha) * prev
-        res(i) = prev
-    Next i
-
-    ComputeEMA = res
+        alpha = 2 / (period + 1)
+        For i = period + 1 To n
+            prev = alpha * values(i) + (1 - alpha) * prev
+        Next i
+        MOVAVG = prev
+    Else
+        ' --- Simple moving average ---
+        total = 0
+        For i = n - period + 1 To n
+            total = total + values(i)
+        Next i
+        MOVAVG = total / period
+    End If
 End Function
 
 
 REM  =====================================================================
-REM  Conversion utilities.
+REM  Helpers.
 REM  =====================================================================
 
-REM  ToColumn - turn a 1-based Double array into a 2-D Variant column for a
-REM  cell array formula. Indexes before validFrom become empty strings.
-Private Function ToColumn(res() As Double, ByVal validFrom As Long) As Variant
-    Dim n As Long, i As Long
-    Dim out() As Variant
-    n = UBound(res)
-    ReDim out(1 To n, 1 To 1)
-    For i = 1 To n
-        If i < validFrom Then
-            out(i, 1) = ""
-        Else
-            out(i, 1) = res(i)
-        End If
-    Next i
-    ToColumn = out
-End Function
-
-
-REM  FlattenToDoubles - normalize a range/array argument into a 1-based
-REM  1-D array of Doubles. Non-numeric / blank cells are treated as 0.
-Private Function FlattenToDoubles(ByVal data As Variant) As Double()
+REM  FlattenToDoubles - normalize a range / array / scalar argument into a
+REM  1-based array of Doubles (returned inside a Variant). Cell ranges
+REM  arrive as 2-D arrays; non-numeric / blank cells are treated as 0.
+Private Function FlattenToDoubles(ByVal data As Variant) As Variant
     Dim out() As Double
-    Dim r As Long, c As Long
-    Dim idx As Long
-    Dim rows As Long, cols As Long
+    Dim r As Long, c As Long, idx As Long
+    Dim nRows As Long, nCols As Long
 
     If Not IsArray(data) Then
         ReDim out(1 To 1)
@@ -151,12 +99,11 @@ Private Function FlattenToDoubles(ByVal data As Variant) As Double()
         Exit Function
     End If
 
-    ' Cell ranges arrive as 2-D arrays (rows, cols).
     On Error GoTo OneDim
-    rows = UBound(data, 1) - LBound(data, 1) + 1
-    cols = UBound(data, 2) - LBound(data, 2) + 1
+    nRows = UBound(data, 1) - LBound(data, 1) + 1
+    nCols = UBound(data, 2) - LBound(data, 2) + 1
 
-    ReDim out(1 To rows * cols)
+    ReDim out(1 To nRows * nCols)
     idx = 0
     For r = LBound(data, 1) To UBound(data, 1)
         For c = LBound(data, 2) To UBound(data, 2)
@@ -179,7 +126,7 @@ OneDim:
 End Function
 
 
-REM  ToDouble - safe numeric conversion; blanks/text become 0.
+REM  ToDouble - safe numeric conversion; blanks / text become 0.
 Private Function ToDouble(ByVal v As Variant) As Double
     If IsNumeric(v) Then
         ToDouble = CDbl(v)

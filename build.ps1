@@ -86,7 +86,7 @@ $entries['description.xml'] = @"
 
 $entries['description/desc_en.txt'] =
     'Simple and exponential moving averages for LibreOffice Calc: ' +
-    'SMA() and EMA() cell functions.'
+    'the MOVAVG() fill-down cell function.'
 
 # Manifest: register the Basic library folder.
 $entries['META-INF/manifest.xml'] = @"
