@@ -16,8 +16,7 @@ $oxtPath = Join-Path $root 'sma_ema.oxt'
 
 # Module name -> source .bas file.
 $modules = [ordered]@{
-    'MovingAverages'       = Join-Path $root 'MovingAverages.bas'
-    'MovingAverageDialog'  = Join-Path $root 'MovingAverageDialog.bas'
+    'MovingAverages' = Join-Path $root 'MovingAverages.bas'
 }
 
 function ConvertTo-XmlText([string]$s) {
@@ -57,9 +56,9 @@ $($elementLines -join "`n")
 </library:library>
 "@
 
-# Dialog index (dialog.xlb). We build the dialog in code rather than storing
-# it in the Dialog Editor, so this index is empty -- but LibreOffice still
-# requires the file to be present when loading the library.
+# Dialog index (dialog.xlb). The library has no dialogs, so this index is
+# empty -- but LibreOffice still requires the file to be present when loading
+# the library.
 $entries["$libName/dialog.xlb"] = @"
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE library:library PUBLIC "-//OpenOffice.org//DTD OfficeDocument 1.0//EN" "library.dtd">
@@ -86,8 +85,8 @@ $entries['description.xml'] = @"
 "@
 
 $entries['description/desc_en.txt'] =
-    'Simple and exponential moving averages for LibreOffice Calc: SMA() and ' +
-    'EMA() cell functions plus a dialog for generating result columns.'
+    'Simple and exponential moving averages for LibreOffice Calc: ' +
+    'SMA() and EMA() cell functions.'
 
 # Manifest: register the Basic library folder.
 $entries['META-INF/manifest.xml'] = @"

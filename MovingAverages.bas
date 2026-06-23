@@ -8,9 +8,6 @@ REM    EMA(data, period)  - Exponential Moving Average
 REM
 REM  Both are array functions: select an output range the same height as
 REM  the input, type the formula, and confirm with Ctrl+Shift+Enter.
-REM
-REM  The actual math lives in the Public helpers ComputeSMA / ComputeEMA so
-REM  that the dialog macro (MovingAverageDialog.bas) can reuse it.
 REM  =====================================================================
 
 Option Explicit
@@ -53,7 +50,7 @@ End Function
 
 
 REM  =====================================================================
-REM  Shared math helpers (Public so the dialog module can call them).
+REM  Shared math helpers.
 REM
 REM  Each takes a 1-based array of Doubles and returns a 1-based array of
 REM  Doubles. validFrom is set (ByRef) to the first index that holds a real
@@ -61,7 +58,7 @@ REM  result; everything before it should be treated as "not enough data".
 REM  =====================================================================
 
 REM  ComputeSMA - trailing average of the last <period> values.
-Public Function ComputeSMA(values() As Double, ByVal period As Long, ByRef validFrom As Long) As Double()
+Private Function ComputeSMA(values() As Double, ByVal period As Long, ByRef validFrom As Long) As Double()
     Dim n As Long, i As Long
     Dim total As Double
     Dim res() As Double
@@ -84,7 +81,7 @@ End Function
 
 REM  ComputeEMA - smoothing factor alpha = 2 / (period + 1), seeded with
 REM  the simple average of the first <period> values.
-Public Function ComputeEMA(values() As Double, ByVal period As Long, ByRef validFrom As Long) As Double()
+Private Function ComputeEMA(values() As Double, ByVal period As Long, ByRef validFrom As Long) As Double()
     Dim n As Long, i As Long
     Dim alpha As Double, seed As Double, prev As Double
     Dim res() As Double
@@ -141,7 +138,7 @@ End Function
 
 REM  FlattenToDoubles - normalize a range/array argument into a 1-based
 REM  1-D array of Doubles. Non-numeric / blank cells are treated as 0.
-Public Function FlattenToDoubles(ByVal data As Variant) As Double()
+Private Function FlattenToDoubles(ByVal data As Variant) As Double()
     Dim out() As Double
     Dim r As Long, c As Long
     Dim idx As Long

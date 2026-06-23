@@ -3,13 +3,10 @@
 A LibreOffice Calc extension for calculating **simple** and **exponential
 moving averages** (SMA / EMA).
 
-It provides two things:
+It provides two **cell functions** you can type into a worksheet:
 
-1. **Cell functions** you can type into a worksheet:
-   - `SMA(data, period)` — simple moving average
-   - `EMA(data, period)` — exponential moving average
-2. **A dialog box** that lets you pick the input data, the output start cell,
-   and one or more window sizes, then writes the result columns for you.
+- `SMA(data, period)` — simple moving average
+- `EMA(data, period)` — exponential moving average
 
 ---
 
@@ -45,40 +42,14 @@ Non-numeric / blank cells in the input are treated as `0`.
 
 ---
 
-## Using the dialog
-
-Run **Tools → Macros → Run Macro… → My Macros / SmaEma →
-MovingAverageDialog → ShowMovingAverageDialog** (or bind it to a toolbar
-button).
-
-The dialog lets you set:
-
-- **Input data range** — pre-filled from the current selection (e.g. `A2:A100`).
-- **Output start cell** — where the first result column begins (e.g. `D2`);
-  output is aligned row-for-row with the input.
-- **Window sizes** — comma-separated, e.g. `5,10,20`.
-- **SMA / EMA** — tick either or both.
-
-On OK it writes one column per measure × window, each with a header label
-(`SMA10`, `EMA20`, …) in the row directly above the output start cell. For
-example, with both boxes ticked and windows `5,10` you get four columns:
-`SMA5`, `EMA5`, `SMA10`, `EMA10`.
-
-Output is written as plain values (it does not recalculate when the source
-data changes). Input is treated as a single column.
-
----
-
 ## Project layout
 
 | File | Purpose |
 |------|---------|
 | `MovingAverages.bas` | The `SMA` / `EMA` cell functions plus the shared `ComputeSMA` / `ComputeEMA` math. |
-| `MovingAverageDialog.bas` | `ShowMovingAverageDialog` — the runtime-built dialog and the code that writes results. |
-| `build.ps1` | Packages both modules into `sma_ema.oxt`. |
+| `build.ps1` | Packages the module into `sma_ema.oxt`. |
 
-The two `.bas` files are the source of truth; the `.oxt` is generated from
-them.
+The `.bas` file is the source of truth; the `.oxt` is generated from it.
 
 ---
 
@@ -90,7 +61,7 @@ The extension is built from the `.bas` source by a PowerShell script:
 pwsh ./build.ps1
 ```
 
-This produces `sma_ema.oxt` in the project root. Internally it converts each
+This produces `sma_ema.oxt` in the project root. Internally it converts the
 `.bas` module into the LibreOffice `.xba` format, adds the extension metadata
 (`description.xml`, `META-INF/manifest.xml`, library index), and zips it.
 
@@ -101,5 +72,5 @@ This produces `sma_ema.oxt` in the project root. Internally it converts each
 You can also use the macros without packaging:
 
 1. **Tools → Macros → Edit Macros** to open the Basic IDE.
-2. Create a module and paste the contents of each `.bas` file.
-3. Use the functions / run `ShowMovingAverageDialog` as above.
+2. Create a module and paste the contents of `MovingAverages.bas`.
+3. Use the `SMA` / `EMA` functions as above.
