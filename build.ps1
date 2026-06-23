@@ -48,13 +48,22 @@ foreach ($name in $modules.Keys) {
     $elementLines += " <library:element library:name=`"$name`"/>"
 }
 
-# Library index (script.xlb).
+# Module index (script.xlb).
 $entries["$libName/script.xlb"] = @"
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE library:library PUBLIC "-//OpenOffice.org//DTD OfficeDocument 1.0//EN" "library.dtd">
 <library:library xmlns:library="http://openoffice.org/2000/library" library:name="$libName" library:readonly="false" library:passwordprotected="false">
 $($elementLines -join "`n")
 </library:library>
+"@
+
+# Dialog index (dialog.xlb). We build the dialog in code rather than storing
+# it in the Dialog Editor, so this index is empty -- but LibreOffice still
+# requires the file to be present when loading the library.
+$entries["$libName/dialog.xlb"] = @"
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE library:library PUBLIC "-//OpenOffice.org//DTD OfficeDocument 1.0//EN" "library.dtd">
+<library:library xmlns:library="http://openoffice.org/2000/library" library:name="$libName" library:readonly="false" library:passwordprotected="false"/>
 "@
 
 # Extension description.
