@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Function Wizard / autocomplete metadata for the MOVAVG add-in function.
+  The AddInInfo node name is the add-in's service name; the Parameters
+  node names (data, period, kind) must match the IDL method argument
+  names in MovingAverages.idl.
+-->
+<oor:component-data xmlns:oor="http://openoffice.org/2001/registry"
+                    xmlns:xs="http://www.w3.org/2001/XMLSchema"
+                    oor:name="CalcAddIns" oor:package="org.openoffice.Office">
+  <node oor:name="AddInInfo">
+    <node oor:name="org.davidjackson.smaema.MovingAveragesAddIn" oor:op="replace">
+      <node oor:name="AddInFunctions">
+        <node oor:name="MOVAVG" oor:op="replace">
+          <prop oor:name="DisplayName">
+            <value xml:lang="en">MOVAVG</value>
+          </prop>
+          <prop oor:name="Description">
+            <value xml:lang="en">Moving average at the end of a range: simple ("S"/omitted) or exponential ("E"). Anchor the range start and fill down, e.g. MOVAVG(A$2:A2, 5).</value>
+          </prop>
+          <prop oor:name="Category">
+            <value>Add-In</value>
+          </prop>
+          <prop oor:name="CompatibilityName">
+            <value xml:lang="en">MOVAVG</value>
+          </prop>
+          <node oor:name="Parameters">
+            <node oor:name="data" oor:op="replace">
+              <prop oor:name="DisplayName">
+                <value xml:lang="en">data</value>
+              </prop>
+              <prop oor:name="Description">
+                <value xml:lang="en">The input cell range (e.g. A$2:A2). Non-numeric / blank cells count as 0.</value>
+              </prop>
+            </node>
+            <node oor:name="period" oor:op="replace">
+              <prop oor:name="DisplayName">
+                <value xml:lang="en">period</value>
+              </prop>
+              <prop oor:name="Description">
+                <value xml:lang="en">Window size: a whole number greater than or equal to 1.</value>
+              </prop>
+            </node>
+            <node oor:name="kind" oor:op="replace">
+              <prop oor:name="DisplayName">
+                <value xml:lang="en">type</value>
+              </prop>
+              <prop oor:name="Description">
+                <value xml:lang="en">"S" or omitted for a simple moving average; "E" for an exponential one.</value>
+              </prop>
+            </node>
+          </node>
+        </node>
+      </node>
+    </node>
+  </node>
+</oor:component-data>

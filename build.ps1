@@ -71,7 +71,7 @@ $entries['description.xml'] = @"
 <description xmlns="http://openoffice.org/extensions/description/2006"
              xmlns:xlink="http://www.w3.org/1999/xlink">
   <identifier value="org.davidjackson.smaema"/>
-  <version value="1.0.0"/>
+  <version value="2.0.0"/>
   <display-name>
     <name lang="en">SMA/EMA Moving Averages</name>
   </display-name>

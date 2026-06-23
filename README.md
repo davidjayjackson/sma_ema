@@ -8,6 +8,14 @@ It provides one **cell function** you can type into a worksheet:
 - `MOVAVG(data, period, [type])` — moving average; `type` is `"S"` (or
   omitted) for a simple moving average, `"E"` for an exponential one.
 
+There are **two implementations** of the same `MOVAVG` function — pick one
+(don't install both, or the duplicate definitions collide):
+
+| Implementation | Autocomplete / Function Wizard | Setup |
+|----------------|-------------------------------|-------|
+| **Basic macro** (`MovingAverages.bas`) | ❌ no — you type the whole name | Paste into the Basic IDE, or install `sma_ema.oxt`. Runs on every LibreOffice with no dependencies. |
+| **Python Add-In** (`addin/`) | ✅ yes — autocompletes and shows in the `fx` wizard | Install `sma_ema_addin.oxt`. Needs LibreOffice's Python scripting (bundled on Windows/macOS). |
+
 ---
 
 ## Installing the extension
@@ -52,14 +60,45 @@ Non-numeric / blank cells in the input are treated as `0`.
 
 ---
 
+## The Python Add-In (autocomplete + Function Wizard)
+
+The Basic function works but never autocompletes — that's a hard limit of
+Basic user functions in LibreOffice. For a `MOVAVG` that **completes as you
+type** and appears in the `fx` **Function Wizard** with argument help, install
+the Python Calc Add-In instead. It computes exactly the same values; only the
+integration differs.
+
+**Install**
+
+1. Build `sma_ema_addin.oxt` (see [Building the add-in](#building-the-add-in)).
+2. **Tools → Extensions… → Add…**, choose `sma_ema_addin.oxt`, accept.
+3. Restart LibreOffice.
+4. If you also have the **Basic** `MOVAVG` (in a Basic library or the other
+   extension), remove it — two definitions of `MOVAVG` collide.
+
+Then `=MOV…` autocompletes to `MOVAVG`, and the Function Wizard lists it under
+the **Add-In** category. Usage (range, period, type) is identical to above.
+
+**Requirements:** LibreOffice's Python scripting, which is bundled on Windows
+and macOS. Some Linux packages need `libreoffice-script-provider-python`
+installed separately. No third-party Python libraries are used.
+
+---
+
 ## Project layout
 
 | File | Purpose |
 |------|---------|
-| `MovingAverages.bas` | The `MOVAVG` cell function (simple + exponential moving averages). |
-| `build.ps1` | Packages the module into `sma_ema.oxt`. |
+| `MovingAverages.bas` | The Basic `MOVAVG` cell function (simple + exponential). |
+| `build.ps1` | Packages the Basic module into `sma_ema.oxt`. |
+| `addin/idl/MovingAverages.idl` | UNO interface declaring the add-in's `MOVAVG` function. |
+| `addin/MovingAveragesAddIn.py` | The Python Add-In component (same math, in Python). |
+| `addin/CalcAddIns.xcu` | Function Wizard metadata (name, argument descriptions). |
+| `addin/description.xml`, `addin/META-INF/manifest.xml` | Add-In extension metadata. |
+| `build_addin.ps1` | Compiles the IDL and packages the add-in into `sma_ema_addin.oxt`. |
 
-The `.bas` file is the source of truth; the `.oxt` is generated from it.
+The `.bas` and `addin/` sources are the source of truth; the `.oxt` files and
+`addin/MovingAverages.rdb` are generated.
 
 ---
 
@@ -74,6 +113,20 @@ pwsh ./build.ps1
 This produces `sma_ema.oxt` in the project root. Internally it converts the
 `.bas` module into the LibreOffice `.xba` format, adds the extension metadata
 (`description.xml`, `META-INF/manifest.xml`, library index), and zips it.
+
+### Building the add-in
+
+The Python Add-In is built by a separate script that needs the **LibreOffice
+SDK** installed (for the `unoidl-write` type-library compiler):
+
+```powershell
+pwsh ./build_addin.ps1
+```
+
+It compiles `addin/idl/MovingAverages.idl` into `addin/MovingAverages.rdb`,
+then zips the Python component, type library, `CalcAddIns.xcu`, and metadata
+into `sma_ema_addin.oxt`. If LibreOffice isn't at the default path, pass
+`-LoRoot "C:\path\to\LibreOffice"`.
 
 ---
 

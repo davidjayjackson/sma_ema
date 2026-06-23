@@ -1,0 +1,23 @@
+#include <com/sun/star/uno/XInterface.idl>
+
+module org { module davidjackson { module smaema {
+
+/** Custom interface declaring the add-in's spreadsheet functions.
+    Each method becomes one Calc function; its programmatic name is the
+    method name (MOVAVG). Argument and function descriptions for the
+    Function Wizard come from CalcAddIns.xcu. */
+interface XMovingAverages
+{
+    /** Moving average at the end of <data>.
+
+        @param data    the input cell range (or a single value).
+        @param period  window size (whole number >= 1).
+        @param kind    "S"/omitted = simple, "E" = exponential.
+     */
+    any MOVAVG( [in] any data, [in] long period, [in] any kind );
+};
+
+/** Single-interface service implemented by the add-in component. */
+service MovingAveragesAddIn : XMovingAverages;
+
+}; }; };
