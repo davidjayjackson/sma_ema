@@ -1,3 +1,7 @@
+<p align="center">
+  <img src="assets/logo-1.svg" alt="sma_ema logo" width="160" height="160">
+</p>
+
 # sma_ema
 
 A LibreOffice Calc extension for calculating **simple** and **exponential
