@@ -5,8 +5,8 @@ moving averages** (SMA / EMA).
 
 It provides one **cell function** you can type into a worksheet:
 
-- `MOVAVG(data, period, [type])` — moving average; `type` is `"S"` (or
-  omitted) for a simple moving average, `"E"` for an exponential one.
+- `MOVAVG(data, period, [type])` — moving average; `type` is `"s"` (or
+  omitted) for a simple moving average, `"e"` for an exponential one.
 
 There are **two implementations** of the same `MOVAVG` function — pick one
 (don't install both, or the duplicate definitions collide):
@@ -39,7 +39,7 @@ down the column, just like `SUM` or `AVERAGE`.
 1. In the first output cell (say `B2`, next to data in column `A`), type the
    formula with the **start of the range anchored** with `$`:
    - `=MOVAVG(A$2:A2;10)` — simple moving average (default)
-   - `=MOVAVG(A$2:A2;10;"E")` — exponential moving average
+   - `=MOVAVG(A$2:A2;10;"e")` — exponential moving average
 2. Press **Enter**.
 3. Select that cell and **drag the fill handle down** the column (or copy it
    down). On each row the range grows — `A$2:A3`, `A$2:A4`, … — so each cell
@@ -54,7 +54,7 @@ Rows that don't yet have `period` values behind them come back **blank**.
 |----------|---------|
 | `data` | The input range, e.g. `A$2:A2`. |
 | `period` | Window size — a whole number ≥ 1. |
-| `type` | `"S"` or omitted = **simple** (trailing average of the last `period` values); `"E"` = **exponential** (`alpha = 2 / (period + 1)`, seeded with the simple average of the first `period` values). |
+| `type` | `"s"` or omitted = **simple** (trailing average of the last `period` values); `"e"` = **exponential** (`alpha = 2 / (period + 1)`, seeded with the simple average of the first `period` values). |
 
 Non-numeric / blank cells in the input are treated as `0`.
 

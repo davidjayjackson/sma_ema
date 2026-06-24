@@ -1,5 +1,5 @@
 MOVAVG moving-average function for LibreOffice Calc, implemented as a Python
-Calc Add-In. MOVAVG(data, period, [type]) returns a simple ("S"/omitted) or
-exponential ("E") moving average at the end of a range. Because it is an
+Calc Add-In. MOVAVG(data, period, [type]) returns a simple ("s"/omitted) or
+exponential ("e") moving average at the end of a range. Because it is an
 Add-In (not a Basic macro), MOVAVG autocompletes as you type and appears in
 the Function Wizard with argument help.

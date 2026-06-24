@@ -4,8 +4,8 @@ REM
 REM  LibreOffice Calc Basic module providing one user-defined function:
 REM
 REM    MOVAVG(data, period, [type])  - Moving Average
-REM        type "S" (or omitted) -> Simple Moving Average
-REM        type "E"              -> Exponential Moving Average
+REM        type "s" (or omitted) -> Simple Moving Average
+REM        type "e"              -> Exponential Moving Average
 REM
 REM  It is an ordinary (scalar) cell function: it returns the moving
 REM  average value at the END of the supplied range. Anchor the start of
@@ -16,8 +16,8 @@ REM  from the first value.
 REM
 REM  Examples:
 REM    =MOVAVG(A$2:A2, 5)        ' simple (default)
-REM    =MOVAVG(A$2:A2, 5, "E")   ' exponential
-REM    =MOVAVG(A$2:A2, 5, "S")   ' simple, explicit
+REM    =MOVAVG(A$2:A2, 5, "e")   ' exponential
+REM    =MOVAVG(A$2:A2, 5, "s")   ' simple, explicit
 REM  =====================================================================
 
 Option Explicit
@@ -26,8 +26,8 @@ Option Explicit
 REM  ---------------------------------------------------------------------
 REM  MOVAVG - Moving Average at the end of <data>.
 REM    period  number of values in the window (whole number >= 1)
-REM    type    "S"/omitted = simple trailing average of the last <period>
-REM            values; "E" = exponential (alpha = 2 / (period + 1), seeded
+REM    type    "s"/omitted = simple trailing average of the last <period>
+REM            values; "e" = exponential (alpha = 2 / (period + 1), seeded
 REM            with the simple average of the first <period> values and
 REM            rolled forward to the end of the range).
 REM  ---------------------------------------------------------------------
@@ -43,11 +43,11 @@ Function MOVAVG(ByVal data As Variant, ByVal period As Long, Optional ByVal kind
     End If
 
     If IsMissing(kind) Then
-        k = "S"
+        k = "s"
     Else
-        k = UCase(Trim(CStr(kind)))
+        k = LCase(Trim(CStr(kind)))
     End If
-    If k = "" Then k = "S"
+    If k = "" Then k = "s"
 
     values = FlattenToDoubles(data)
     n = UBound(values)
@@ -56,7 +56,7 @@ Function MOVAVG(ByVal data As Variant, ByVal period As Long, Optional ByVal kind
         Exit Function
     End If
 
-    If Left(k, 1) = "E" Then
+    If Left(k, 1) = "e" Then
         ' --- Exponential moving average ---
         seed = 0
         For i = 1 To period

@@ -12,7 +12,7 @@ interface XMovingAverages
 
         @param data    the input cell range (or a single value).
         @param period  window size (whole number >= 1).
-        @param kind    "S"/omitted = simple, "E" = exponential.
+        @param kind    "s"/omitted = simple, "e" = exponential.
      */
     any MOVAVG( [in] any data, [in] long period, [in] any kind );
 };

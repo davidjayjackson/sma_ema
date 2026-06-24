@@ -8,8 +8,8 @@
 #
 # Function:
 #   MOVAVG(data, period, [type])
-#       type "S" / omitted -> simple moving average
-#       type "E"           -> exponential moving average
+#       type "s" / omitted -> simple moving average
+#       type "e"           -> exponential moving average
 #   Returns the moving average value at the END of <data>. Anchor the
 #   start of the range and fill down, e.g. =MOVAVG(A$2:A2, 5).
 #
@@ -59,9 +59,9 @@ def _movavg(data, period, kind):
     if period < 1:
         return "Error: period must be >= 1"
 
-    k = "S"
+    k = "s"
     if kind is not None:
-        s = str(kind).strip().upper()
+        s = str(kind).strip().lower()
         if s:
             k = s
 
@@ -70,7 +70,7 @@ def _movavg(data, period, kind):
     if n < period:
         return ""  # not enough data yet
 
-    if k[:1] == "E":
+    if k[:1] == "e":
         # Exponential: seed with the simple average of the first <period>
         # values, then roll forward to the end of the range.
         prev = sum(values[:period]) / period

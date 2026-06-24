@@ -16,7 +16,7 @@
             <value xml:lang="en">MOVAVG</value>
           </prop>
           <prop oor:name="Description">
-            <value xml:lang="en">Moving average at the end of a range: simple ("S"/omitted) or exponential ("E"). Anchor the range start and fill down, e.g. MOVAVG(A$2:A2, 5).</value>
+            <value xml:lang="en">Moving average at the end of a range: simple ("s"/omitted) or exponential ("e"). Anchor the range start and fill down, e.g. MOVAVG(A$2:A2, 5).</value>
           </prop>
           <prop oor:name="Category">
             <value>Add-In</value>
@@ -46,7 +46,7 @@
                 <value xml:lang="en">type</value>
               </prop>
               <prop oor:name="Description">
-                <value xml:lang="en">"S" or omitted for a simple moving average; "E" for an exponential one.</value>
+                <value xml:lang="en">"s" or omitted for a simple moving average; "e" for an exponential one.</value>
               </prop>
             </node>
           </node>
