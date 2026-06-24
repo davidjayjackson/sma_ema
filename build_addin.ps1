@@ -58,6 +58,7 @@ $files = [ordered]@{
     'description.xml'         = Join-Path $addin 'description.xml'
     'description/desc_en.txt' = Join-Path $addin 'description\desc_en.txt'
     'META-INF/manifest.xml'   = Join-Path $addin 'META-INF\manifest.xml'
+    'icon.png'                = Join-Path $root 'assets\icon.png'
 }
 
 Add-Type -AssemblyName System.IO.Compression

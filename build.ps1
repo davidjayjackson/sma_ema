@@ -81,6 +81,9 @@ $entries['description.xml'] = @"
   <extension-description>
     <src lang="en" xlink:href="description/desc_en.txt"/>
   </extension-description>
+  <icon>
+    <default xlink:href="icon.png"/>
+  </icon>
 </description>
 "@
 
@@ -112,6 +115,16 @@ try {
         $writer.Write([string]$entries[$entryName])
         $writer.Flush()
         $writer.Dispose()
+        $stream.Dispose()
+    }
+
+    # Extension icon (binary PNG -- copied byte-for-byte).
+    $iconSrc = Join-Path $root 'assets\icon.png'
+    if (Test-Path $iconSrc) {
+        $entry  = $zip.CreateEntry('icon.png', [System.IO.Compression.CompressionLevel]::Optimal)
+        $stream = $entry.Open()
+        $bytes  = [System.IO.File]::ReadAllBytes($iconSrc)
+        $stream.Write($bytes, 0, $bytes.Length)
         $stream.Dispose()
     }
 }

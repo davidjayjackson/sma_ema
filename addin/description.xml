@@ -12,4 +12,7 @@
   <extension-description>
     <src lang="en" xlink:href="description/desc_en.txt"/>
   </extension-description>
+  <icon>
+    <default xlink:href="icon.png"/>
+  </icon>
 </description>
